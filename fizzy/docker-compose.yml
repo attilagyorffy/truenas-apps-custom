@@ -1,0 +1,58 @@
+networks:
+  fizzy-network:
+    driver: bridge
+
+services:
+  fizzy:
+    container_name: fizzy
+    image: ghcr.io/basecamp/fizzy:main
+    networks:
+      - fizzy-network
+    ports:
+      - "3000:80"
+    pull_policy: always
+    restart: unless-stopped
+    environment:
+      # Core configuration
+      # Generate a secret key using: openssl rand -hex 64
+      SECRET_KEY_BASE: 42a698db1e37bb382527dcfab14ff17e62a79202bdf3e84a62227ee1c68c4ff5fb417e9fb4d58e15502f23bb23095d94ff4a237126ae66d6c1f831927bd01ce8
+      DISABLE_SSL: "true"
+      BASE_URL: http://fizzy.gyorffy.network
+
+      # SMTP configuration using a custom TrueNAS Mailcatcher server
+      MAILER_FROM_ADDRESS: fizzy@example.com
+      SMTP_ADDRESS: 10.0.0.3
+      SMTP_PORT: 1025
+      SMTP_TLS: "false"
+      SMTP_USERNAME: ""
+      SMTP_PASSWORD: ""
+
+      # VAPID keys for web push notifications (optional)
+      # Generate these using the instructions in the documentation
+      # VAPID_PRIVATE_KEY: your-vapid-private-key
+      # VAPID_PUBLIC_KEY: your-vapid-public-key
+
+      # Multi-tenant mode (optional)
+      # MULTI_TENANT: 'true'
+
+      # S3 storage configuration (optional - uncomment if using S3 instead of local storage)
+      # ACTIVE_STORAGE_SERVICE: s3
+      # S3_BUCKET: your-bucket-name
+      # S3_REGION: us-east-1
+      # S3_ACCESS_KEY_ID: your-access-key
+      # S3_SECRET_ACCESS_KEY: your-secret-key
+
+    volumes:
+      # IMPORTANT: Container runs as user 1000:1000 internally
+      # Ensure these directories are owned by UID 1000:
+      # mkdir -p /mnt/tank/apps/fizzy/storage /mnt/tank/apps/fizzy/tmp
+      # chown -R 1000:1000 /mnt/tank/apps/fizzy/storage /mnt/tank/apps/fizzy/tmp
+      - /mnt/tank/apps/fizzy/storage:/rails/storage
+      - /mnt/tank/apps/fizzy/tmp:/rails/tmp
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s

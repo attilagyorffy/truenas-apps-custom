@@ -1,0 +1,60 @@
+networks:
+  ghost-network:
+    driver: bridge
+
+services:
+  ghost:
+    container_name: ghost
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      activitypub__enabled: False
+      database__client: mysql
+      database__connection__database: ghost
+      database__connection__host: mysql
+      database__connection__password: changeme-ghost-password
+      database__connection__user: ghost
+      mail__options__host: 10.0.0.3
+      mail__options__port: 1025
+      mail__options__secure: False
+      mail__transport: SMTP
+      url: https://blog.example.com
+    image: ghost:6.9.3
+    networks:
+      - ghost-network
+    ports:
+      - "2368:2368"
+    pull_policy: always
+    restart: unless-stopped
+    volumes:
+      - /mnt/tank/apps/ghost/content:/var/lib/ghost/content
+  mysql:
+    container_name: ghost-mysql
+    environment:
+      MYSQL_DATABASE: ghost
+      MYSQL_PASSWORD: changeme-ghost-password
+      MYSQL_ROOT_PASSWORD: changeme-root-password
+      MYSQL_USER: ghost
+    healthcheck:
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - "-h"
+        - localhost
+        - "-u"
+        - root
+        - "-pchangeme-root-password"
+      timeout: 5s
+    image: mysql:8.4.7
+    networks:
+      - ghost-network
+    pull_policy: always
+    restart: unless-stopped
+    volumes:
+      - /mnt/tank/apps/ghost/mysql:/var/lib/mysql

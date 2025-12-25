@@ -1,0 +1,29 @@
+networks:
+  ix-n8n_default:
+    external: True
+
+services:
+  mailcatcher:
+    container_name: mailcatcher
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      test:
+        - CMD
+        - wget
+        - "--quiet"
+        - "--tries=1"
+        - "--spider"
+        - http://127.0.0.1:1080/
+      timeout: 10s
+    image: sj26/mailcatcher:latest
+    labels:
+      - com.truenas.app=mailcatcher
+      - com.truenas.description=SMTP testing and email capture tool
+    networks:
+      - ix-n8n_default
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+    restart: unless-stopped
