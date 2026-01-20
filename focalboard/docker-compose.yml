@@ -1,0 +1,30 @@
+# Docker compose file for running Focalboard on TrueNAS Scale
+
+services:
+  focalboard:
+    container_name: focalboard
+    image: mattermost/focalboard:latest
+    restart: unless-stopped
+
+    ports:
+      # Web interface - Access at http://your-truenas-ip:3002
+      - "3002:8000"
+
+    volumes:
+      # Persistent data storage (database and uploaded files)
+      # Must mount to /opt/focalboard/data as the app expects ./data relative to working dir
+      # Container runs as nobody:nogroup (UID:GID 65534:65534)
+      # Ensure host directory has matching ownership
+      - /mnt/tank/apps/focalboard/data:/opt/focalboard/data
+
+    environment:
+      # Timezone configuration (adjust to your local timezone)
+      - TZ=Europe/Budapest
+
+    # No internal healthcheck - container lacks wget/curl
+    # Monitor externally via: curl -f http://your-truenas-ip:3002/
+
+    # Labels for organization
+    labels:
+      - "com.truenas.app=focalboard"
+      - "com.truenas.description=Open source project management tool"

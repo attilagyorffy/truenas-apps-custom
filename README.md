@@ -30,6 +30,7 @@ These apps are deployed through the TrueNAS Web UI, not via command-line Docker 
 
 ## Apps
 
+- **[Focalboard](./focalboard/)** - Self-hosted alternative to Trello, Notion, and Asana
 - **[Ghost](./ghost/)** - Blogging platform with MySQL backend
 - **[MailCatcher](./mailcatcher/)** - SMTP testing and email capture service
 - **[Fizzy](./fizzy/)** - Lightweight issue tracking system
