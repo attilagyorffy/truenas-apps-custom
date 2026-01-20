@@ -33,6 +33,7 @@ These apps are deployed through the TrueNAS Web UI, not via command-line Docker 
 - **[Ghost](./ghost/)** - Blogging platform with MySQL backend
 - **[MailCatcher](./mailcatcher/)** - SMTP testing and email capture service
 - **[Fizzy](./fizzy/)** - Lightweight issue tracking system
+- **[Uptime Kuna](./uptime-kuna/)** - Monitoring tool that allows you to monitor your websites, APIs, and services
 
 ## Configuration
 
